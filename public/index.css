@@ -18,4 +18,4 @@ form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 
 
 #m {width:79%;}
 
-#messages { position: absolute; bottom: 3.5em; width: 100%; }
+#messages {margin-bottom: 3.5em; width: 100%; }
