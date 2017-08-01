@@ -11,6 +11,29 @@ var app = new exprss();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
+var date = new Date();
+
+var MongoClient = require('mongodb').MongoClient, assert = require('assert');
+var url = 'mongodb://localhost:27017/ooploop';
+
+MongoClient.connect(url, function(err, db) {
+	assert.equal(null, err);
+	console.log('Connected successfully to server');
+
+	db.close();
+})
+
+MongoClient.connect(url, function(err, db) {
+  if (err) throw err;
+  var myobj = { nickname: "abc", text: "def" };
+  db.collection("chatHistory.chat1").insertOne(myobj, function(err, res) {
+    if (err) throw err;
+    console.log("1 record inserted");
+    db.close();
+  });
+});
+
+console.log('Time restarted: ' + date.getHours() + ':' + date.getMinutes() + "." + date.getSeconds());
 
 function grab(flag){
 	var index = process.argv.indexOf(flag);
@@ -24,8 +47,9 @@ var node_program_directory = process.argv[0];
 /*
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
-});
+})
 */
+
 app.use(exprss.static(__dirname+'/public'));
 
 io.on('connection', function(socket){
