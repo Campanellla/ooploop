@@ -68,3 +68,22 @@ http.listen(8080, function(){
   console.log('listening on *:8080');
 });
 
+//log data to shell
+function logMessages(){
+	MongoClient.connect(DBurl, function(err, db) {
+		if (err) throw err;
+
+		db.collection('chatHistory.chat1', function(err, collection) {
+        	if (!err) {
+          		collection.find({}).toArray(
+          			function(err, docs) {
+          				console.log(docs);
+          			}
+          		)
+          	}
+        })
+		db.close();
+	});
+}
+
+logMessages();
