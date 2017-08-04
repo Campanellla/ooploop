@@ -33,6 +33,24 @@ function SendMessageToDB(msg){
 		});
 	});
 };
+//get all messages from db
+function GetMessagesFromDB(resp){
+	MongoClient.connect(DBurl, function(err, db) {
+		if (err) throw err;
+
+		db.collection('chatHistory.chat1', function(err, collection) {
+        	if (!err) {
+          		collection.find({}).toArray(
+          			function(err, docs) {
+          				resp(docs);
+          				db.close();
+          			}
+          		)
+          	}
+        })
+		
+	});
+}
 
 //Send time to console
 var date = new Date();
@@ -55,12 +73,18 @@ io.on('connection', function(socket){
 	socket.on('disconnect', function(){
 		console.log('user disconnected');
 	});
-	socket.on('chat message', function(msg){
+	socket.on('chat message', function(msg) {
 		SendMessageToDB(msg);
 		console.log('nick: '+ msg.nickname+' message: ' + msg.message);
 		io.emit('chat message', msg);
 		console.log(socket.id);
 	});
+	socket.on('get messages', function(msg) {
+		GetMessagesFromDB(function(aaa){
+			io.to(socket.id).emit('receive messages', aaa);
+		});
+		
+	})
 });
 
 
@@ -68,22 +92,4 @@ http.listen(8080, function(){
   console.log('listening on *:8080');
 });
 
-//log data to shell
-function logMessages(){
-	MongoClient.connect(DBurl, function(err, db) {
-		if (err) throw err;
 
-		db.collection('chatHistory.chat1', function(err, collection) {
-        	if (!err) {
-          		collection.find({}).toArray(
-          			function(err, docs) {
-          				console.log(docs);
-          			}
-          		)
-          	}
-        })
-		db.close();
-	});
-}
-
-logMessages();

@@ -9,17 +9,34 @@
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
       $(function () {
-      var socket = io();
-      $('form').submit(function(){
-      socket.emit('chat message', {"message" : $('#m').val(), "nickname" : $('#l').val() } );
-        $('#m').val('');
-        return false;
-      });
-      socket.on('chat message', function(msg){
-        $('#messages').append($('<li>').text(msg.nickname + ' : '+ msg.message));
-        $("html, body").animate({ scrollTop: $(document).height() }, 100);
+        var socket = io();
+        $('form').submit(function(){
+        socket.emit('chat message', {"message" : $('#m').val(), "nickname" : $('#l').val() } );
+          $('#m').val('');
+          return false;
         });
+        socket.on('chat message', function(msg){
+          $('#messages').append($('<li>').text(msg.nickname + ' : '+ msg.message));
+          $("html, body").animate({ scrollTop: $(document).height() }, 100);
+          });
       });
+
+      var socket = io();
+      window.onload = function() {
+        socket.emit('get messages', {});
+      };
+
+      socket.on('receive messages', function(msg) {
+        var count = 0;
+        console.log(msg);
+        while(msg[count]){
+          $('#messages').append($('<li>').text(msg[count].nickname + ' : '+ msg[count].text));
+          count++;
+        }
+        $("html, body").animate({ scrollTop: $(document).height() }, 100);
+      });
+
+
     </script>
     <div id="chatBody">
       <ul id="messages"></ul>
