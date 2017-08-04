@@ -1,6 +1,11 @@
-var path = require('path');
-var util = require('util');
-var url = require('url');
+////---INIT---
+
+//var path = require('path');
+//var util = require('util');
+//var url = require('url');
+
+var config = require('./config');
+
 var querystring = require('querystring');
 var static = require('node-static');
 var file = new static.Server('.');
@@ -11,10 +16,21 @@ var app = new exprss();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
-var MongoClient = require('mongodb').MongoClient, assert = require('assert');
-var DBurl = 'mongodb://localhost:27017/ooploop';
+//Send time to console
+var date = new Date();
+console.log('Time restarted: ' + date.getHours() + ':' + date.getMinutes() + "." + date.getSeconds());
 
-//Have MongoDB connection?
+var start_directory = __dirname;
+var node_program_directory = process.argv[0];
+
+//init mongo client
+var MongoClient = require('mongodb').MongoClient, assert = require('assert');
+var DBurl = config.DBurl;
+
+
+////---INIT----
+
+//Check MongoDB connection?
 MongoClient.connect(DBurl, function(err, db) {
 	assert.equal(null, err);
 	console.log('Connected successfully to server');
@@ -33,6 +49,7 @@ function SendMessageToDB(msg){
 		});
 	});
 };
+
 //get all messages from db
 function GetMessagesFromDB(resp){
 	MongoClient.connect(DBurl, function(err, db) {
@@ -41,55 +58,44 @@ function GetMessagesFromDB(resp){
 		db.collection('chatHistory.chat1', function(err, collection) {
         	if (!err) {
           		collection.find({}).toArray(
-          			function(err, docs) {
-          				resp(docs);
+          			function(err, data) {
+          				resp(data);
           				db.close();
           			}
           		)
           	}
         })
-		
 	});
 }
-
-//Send time to console
-var date = new Date();
-console.log('Time restarted: ' + date.getHours() + ':' + date.getMinutes() + "." + date.getSeconds());
-
-function grab(flag){
-	var index = process.argv.indexOf(flag);
-	if (index === -1) {return null;} else {return process.argv[index+1]};
-}
-
-var directory = grab('--dir');
-var start_directory = __dirname;
-var node_program_directory = process.argv[0];
 
 
 app.use(exprss.static(__dirname+'/public'));
 
 io.on('connection', function(socket){
 	console.log('a user connected');
+
 	socket.on('disconnect', function(){
 		console.log('user disconnected');
 	});
+
 	socket.on('chat message', function(msg) {
 		SendMessageToDB(msg);
 		console.log('nick: '+ msg.nickname+' message: ' + msg.message);
 		io.emit('chat message', msg);
 		console.log(socket.id);
 	});
+
 	socket.on('get messages', function(msg) {
 		GetMessagesFromDB(function(aaa){
 			io.to(socket.id).emit('receive messages', aaa);
 		});
-		
 	})
+
 });
 
 
-http.listen(8080, function(){
-  console.log('listening on *:8080');
+http.listen(config.server.port, function(){
+  console.log('listening on *:' + config.server.port);
 });
 
 
