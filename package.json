@@ -5,6 +5,8 @@
   "dependencies": {
     "express": "^4.15.3",
     "mongodb": "^2.2.30",
-    "socket.io": "^2.0.3"
+    "node-static": "^0.7.9",
+    "socket.io": "^2.0.3",
+    "socketio-jwt": "^4.5.0"
   }
 }

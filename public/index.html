@@ -8,13 +8,19 @@
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
 		<script src="/script.js"></script>
-
+		<div id="loginBody">
+			<form action="">
+				<input id="loginLogin" autocomplete="off" placeholder="Login" />
+				<input id="loginPass" autocomplete="off" placeholder="Password" />
+				<button>Auth</button>
+			</form>
+		</div>
 		<div id="chatBody">
 			<ul id="messages"></ul>
-			<form action="">
+			<form action="" id="messageInput">
 				<input id="l" autocomplete="off" placeholder="nickname" />
 				<input id="m" autocomplete="off" placeholder="message" />
-				<button>Send</button>
+				<button >Send</button>
 			</form>
 		</div>
 		

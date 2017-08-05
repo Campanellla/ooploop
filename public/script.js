@@ -2,7 +2,7 @@
 var socket = io();
 
 $(function () {
-	$('form').submit(function(){
+	$('#messageInput').submit(function(){
 		socket.emit('chat message', {
 			"message" : $('#m').val(),
 			"nickname" : $('#l').val()
@@ -31,6 +31,8 @@ $(function () {
 	
 	///init
 	socket.emit('get messages', {});
+
+
 });
 
 
