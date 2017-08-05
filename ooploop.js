@@ -68,6 +68,23 @@ function GetMessagesFromDB(resp){
 	});
 }
 
+function CheckLogin(msgLogin, resp) {
+	MongoClient.connect(DBurl, function(err, db) {
+		if (err) throw err;
+
+		db.collection('users', function(err, collection) {
+        	if (!err) {
+          		collection.find({'login':msgLogin.login}).toArray(
+          			function(err, data) {
+          				resp(data);
+          				db.close();
+          			}
+          		)
+          	}
+        })
+	});
+}
+
 
 app.use(exprss.static(__dirname+'/public'));
 
@@ -92,7 +109,23 @@ io.on('connection', function(socket){
 	})
 
 	socket.on('login', function(msgLogin) {
-		
+		CheckLogin(msgLogin, function(data){
+			if(data.length>1){
+				console.log("too many users found: " + data[0].login);
+				return null;
+			}
+			if(data[0].login===msgLogin.login) {
+				console.log("OK===");
+				if(data[0].pass===msgLogin.password) {
+					io.to(socket.id).emit('loginCallback', "OK. Logged in.");
+				} else {
+					io.to(socket.id).emit('loginCallback', "NOT OK");
+				};
+			};
+
+			return null;
+		});
+		//console.log(msgLogin.login+" "+msgLogin.pass)
 	});
 
 });
