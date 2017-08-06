@@ -24,4 +24,10 @@ body { font: 13px Helvetica, Arial; }
 
 #loginBody form button { width: 10%; background: rgb(130, 224, 255); border: none; padding: 10px; }
 
-#loginBody { border:3px; padding: 3px; width: 60%; margin-left: auto; margin-right: auto; }
+#loginBody { border:3px; padding: 3px; width: 60%; 
+	position : fixed;
+	top: 45%;
+	left : 25%;
+}
+
+#chatBody {display:none; }

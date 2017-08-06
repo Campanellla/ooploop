@@ -39,6 +39,10 @@ $(function () {
 
 	socket.on('loginCallback', function(msg){
 		console.log(msg);
+		if(msg==="OK. Logged in."){
+			$('#loginBody').hide();
+			$('#chatBody').show();
+		}
 	})
 	
 	///init
