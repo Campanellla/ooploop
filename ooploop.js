@@ -74,8 +74,9 @@ function CheckLogin(msgLogin, resp) {
 
 		db.collection('users', function(err, collection) {
         	if (!err) {
-          		collection.find({'login':msgLogin.login}).toArray(
+          		collection.find({'login': msgLogin.login}).toArray(
           			function(err, data) {
+
           				resp(data);
           				db.close();
           			}
@@ -113,16 +114,17 @@ io.on('connection', function(socket){
 			if(data.length>1){
 				console.log("too many users found: " + data[0].login);
 				return null;
+			} else if(data.length===0){
+				io.to(socket.id).emit('loginCallback', "NOT OK");
+				return null;
 			}
 			if(data[0].login===msgLogin.login) {
-				console.log("OK===");
-				if(data[0].pass===msgLogin.password) {
+				if(data[0].password===msgLogin.pass) {
 					io.to(socket.id).emit('loginCallback', "OK. Logged in.");
 				} else {
 					io.to(socket.id).emit('loginCallback', "NOT OK");
 				};
 			};
-
 			return null;
 		});
 		//console.log(msgLogin.login+" "+msgLogin.pass)
