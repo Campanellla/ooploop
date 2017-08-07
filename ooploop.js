@@ -86,6 +86,18 @@ function CheckLogin(msgLogin, resp) {
 	});
 }
 
+function RegisterInDB(msg){
+	MongoClient.connect(DBurl, function(err, db) {
+		if (err) throw err;
+		var myobj = { 'login':msg.login, 'password':msg.pass};
+		db.collection("users").insertOne(myobj, function(err, res) {
+			if (err) throw err;
+			console.log("user inserted");
+			db.close();
+		});
+	});
+};
+
 
 app.use(exprss.static(__dirname+'/public'));
 
@@ -129,6 +141,10 @@ io.on('connection', function(socket){
 		});
 		//console.log(msgLogin.login+" "+msgLogin.pass)
 	});
+
+	socket.on('register', function(msg){
+		RegisterInDB(msg);
+	})
 
 });
 

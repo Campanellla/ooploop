@@ -25,6 +25,13 @@ $(function () {
 		return false;
 	})
 
+	$('#regbutton').click(function() {
+		socket.emit('register', {
+			"login" : $('#loginLogin').val(),
+			"pass"	: $('#loginPass').val()
+		});
+	})
+
 	socket.on('chat message', function(msg){
 		$('#messages').append($('<li>').text(msg.nickname + ' : '+ msg.message));
 		$("html, body").animate({ scrollTop: $(document).height() }, 100);
